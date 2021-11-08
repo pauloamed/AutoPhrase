@@ -42,14 +42,7 @@ void process(const vector<TOTAL_TOKENS_TYPE>& tokens, const vector<POS_ID_TYPE>&
         }
 
         double quality_score = (trie[u].id == patterns.size()? 1 : patterns[trie[u].id].quality);
-        // quality &= (segmenter.qualify(trie[u].id, i - j, SEGMENT_MULTI_WORD_QUALITY_THRESHOLD, SEGMENT_SINGLE_WORD_QUALITY_THRESHOLD));
-        quality &= trie[u].id == patterns.size() && ( // These phrases are in the wiki_quality.txt, their quality scores are treated as 1.
-                        i - j > 1 && 1 >= SEGMENT_MULTI_WORD_QUALITY_THRESHOLD ||
-                        i - j == 1 && 1 >= SEGMENT_SINGLE_WORD_QUALITY_THRESHOLD) || 
-                   trie[u].id < patterns.size() && trie[u].id >= 0 && (
-                        patterns[trie[u].id].size() > 1 && patterns[trie[u].id].quality >= SEGMENT_MULTI_WORD_QUALITY_THRESHOLD ||
-                        patterns[trie[u].id].size() == 1 && patterns[trie[u].id].quality >= SEGMENT_SINGLE_WORD_QUALITY_THRESHOLD
-                   );
+        quality &= (segmenter.qualify(trie[u].id, i - j, SEGMENT_MULTI_WORD_QUALITY_THRESHOLD, SEGMENT_SINGLE_WORD_QUALITY_THRESHOLD));
 
         if (quality) {
             ret.push_back("</phrase>");
@@ -62,7 +55,7 @@ void process(const vector<TOTAL_TOKENS_TYPE>& tokens, const vector<POS_ID_TYPE>&
         }
         if (quality) {
             stringstream phrase_xml_tag;
-            phrase_xml_tag << "<phrase Q=" << quality_score << ">"; 
+            phrase_xml_tag << std::setprecision(3) << std::fixed << "<phrase_Q=" << quality_score << ">"; 
             ret.push_back(phrase_xml_tag.str());
         }
 
